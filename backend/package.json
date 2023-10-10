@@ -5,10 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "npx nodemon server.ts -e ts",
-    "test": "jest usersAndAddresses.test.t --watch --verbose --maxWorkers 1 --config ./jest.config.js",
-    "docs-main": "docker run -p 80:8080 -v $(pwd):$(pwd) -e SWAGGER_JSON=temp/openapi.json swaggerapi/swagger-ui",
-    "docs-main2": "docker run -p 80:8080 -e SWAGGER_JSON=/foo/openapi.json -v /${doc-path}/:/foo swaggerapi/swagger-ui",
-    "docs": "npx nodemon --exec \"npm run docs-main\" -e .json"
+    "test": "jest usersAndAddresses.test.t --watch --verbose --maxWorkers 1 --config ./jest.config.js"
   },
   "author": "cirossmonteiro",
   "license": "ISC",
