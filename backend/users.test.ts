@@ -16,7 +16,7 @@ const getToken = async () => {
   return jwt.sign({ username: data.user.username }, TOKEN_SECRET);
 }
 
-describe('UsersAndAddresses', () => {
+describe('Users and their addresses', () => {
   afterEach(async () => {
     await db();
     await Users.deleteMany({});
