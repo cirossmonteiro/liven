@@ -38,6 +38,7 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
           (req as any).user = user._id;
           next();
         } else {
+          console.log(36, data.username, await Users.find().lean());
           res.status(401).send("User doesn't exist.");
         }
       }

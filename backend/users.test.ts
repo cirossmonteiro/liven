@@ -6,14 +6,22 @@ import app from ".";
 import data from './data';
 import db from './db';
 import { Addresses, Users } from './schemas';
+import mongoose from "mongoose";
 
 dotenv.config();
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET as string;
 
-const getToken = async () => {
-  await request(app).post("/users").send(data.user);
-  return jwt.sign({ username: data.user.username }, TOKEN_SECRET);
+const getToken = async (usernameSuffix: string = "") => {
+  await request(app).post("/users").send({
+    ...data.user,
+    username: data.user.username + usernameSuffix,
+    email: data.user.email + usernameSuffix
+  });
+  return jwt.sign({
+    username: data.user.username + usernameSuffix,
+    email: data.user.email + usernameSuffix
+  }, TOKEN_SECRET);
 }
 
 describe('Users and their addresses', () => {
@@ -21,6 +29,8 @@ describe('Users and their addresses', () => {
     await db();
     await Users.deleteMany({});
     await Addresses.deleteMany({});
+    await mongoose.connection.close();
+    console.log(33, "____________HERE______________");
   });
 
   // DONE
@@ -117,6 +127,21 @@ describe('Users and their addresses', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body[0]).toMatchObject(data.address.home);
     expect(response.body[1]).toMatchObject(data.address.work);
+    const home = response.body[0]; // to use in next test
+
+    // fetch one address
+    response = await request(app).get(`/users/addresses/${home._id}`).set('authorization', `Bearer ${token}`);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toMatchObject(data.address.home);
+
+    // address belongs to another user
+    const token2 = await getToken("asd");
+    response = await request(app).get(`/users/addresses/${home._id}`).set('authorization', `Bearer ${token2}`);
+    expect(response.statusCode).toBe(403);
+
+    // wrong id
+    response = await request(app).get("/users/addresses/000000000000000000000000").set('authorization', `Bearer ${token}`);
+    expect(response.statusCode).toBe(404);
 
     // search
     response = await request(app).get("/users/addresses?number=116").set('authorization', `Bearer ${token}`);

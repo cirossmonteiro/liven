@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "npx nodemon server.ts -e ts",
-    "test": "jest --force-exit"
+    "test": "jest"
   },
   "author": "cirossmonteiro",
   "license": "ISC",
